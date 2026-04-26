@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Jeep Dark Tracker</title>
+<style>
+body{background:#0b0d0f;color:#e9ecef;font-family:-apple-system,Arial;margin:0;padding:16px}
+h1{margin:0 0 4px;font-size:20px}
+small{color:#aab0b8}
+.card{border:1px solid #1f252b;border-radius:12px;padding:12px;margin-top:12px;background:#121518}
+.row{display:flex;justify-content:space-between;align-items:center}
+label{display:flex;align-items:center;gap:8px;margin-top:8px}
+button{border-radius:10px;border:1px solid #1f252b;background:#121518;color:#e9ecef;padding:8px 10px}
+input[type="text"],input[type="number"]{width:100%;border-radius:10px;border:1px solid #1f252b;background:#121518;color:#e9ecef;padding:8px 10px}
+</style>
+</head>
+<body>
+<h1>Jeep Dark Tracker</h1>
+<small>Dark mode, four meals, no nonsense.</small>
+<div class="card" id="day"></div>
+
+<div class="card">
+<div class="row"><strong>Weight</strong><small id="saved"></small></div>
+<div class="row">
+<input id="wt" type="number" placeholder="Weight"/>
+<button onclick="saveWeight()">Save</button>
+</div>
+</div>
+
+<div class="card">
+<div class="row"><strong>Settings</strong></div>
+<label>Beer cap <input id="cap" type="number" min="0" max="10"/></label>
+</div>
+
+<script>
+const S="jeep_dark_v1";
+const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const workouts={Mon:"Push",Tue:"Pull",Wed:"Legs",Thu:"Push",Fri:"Pull",Sat:"Light",Sun:"Recovery"};
+const wakeW="06:30", wakeE="07:05";
+const meals=[{n:"Meal 1",t:"08:05"},{n:"Meal 2",t:"11:00"},{n:"Meal 3",t:"12:45"},{n:"Meal 4",t:"18:30"}];
+const state=JSON.parse(localStorage.getItem(S)||'{"cap":3,"weights":{},"check":{}}');
+document.getElementById("cap").value=state.cap;
+
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function render(){
+  const k=todayKey(), d=new Date();
+  const dow=weekdays[d.getDay()];
+  const wake=(d.getDay()==0||d.getDay()==6)?wakeE:wakeW;
+  const items=[{title:"Workout",meta:workouts[dow]||""},...meals.map(m=>({title:m.n,meta:m.t})),{title:"Beer plan",meta:"Bud 55 cap "+state.cap},{title:"Kitchen closed",meta:"After dinner"}];
+  const chk=state.check[k]||Array(items.length).fill(false);
+  let html=`<div class="row"><strong>${dow} ${k}</strong><small>Wake ${wake}</small></div>`;
+  items.forEach((it,i)=>{const yes=chk[i]?"checked":"";html+=`<label><input type="checkbox" ${yes} onchange="toggle(${i})">${it.title}</label><small>${it.meta}</small>`;});
+  document.getElementById("day").innerHTML=html;
+  document.getElementById("saved").textContent=state.weights[k]?"Saved "+state.weights[k]:"";
+  state.check[k]=chk;
+}
+function toggle(i){
+  const k=todayKey();
+  state.check[k]=state.check[k]||Array(6).fill(false);
+  state.check[k][i]=!state.check[k][i];
+  save();
+  render();
+}
+function save(){
+  state.cap=parseInt(document.getElementById("cap").value||"3",10);
+  localStorage.setItem(S,JSON.stringify(state));
+}
+function saveWeight(){
+  const k=todayKey();
+  const n=parseFloat(document.getElementById("wt").value);
+  if(n>0) state.weights[k]=n; else delete state.weights[k];
+  save();
+  render();
+}
+document.getElementById("cap").onchange=()=>{save();render();};
+render();
+</script>
+</body>
+</html>
