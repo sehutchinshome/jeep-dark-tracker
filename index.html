@@ -1,79 +1,70 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RAD DAD App</title>
 <style>
-body{background:#0b0d0f;color:#e9ecef;font-family:-apple-system,Arial;margin:0;padding:16px}
-h1{margin:0 0 4px;font-size:20px}
-small{color:#aab0b8}
-.card{border:1px solid #1f252b;border-radius:12px;padding:12px;margin-top:12px;background:#121518}
-.row{display:flex;justify-content:space-between;align-items:center}
-label{display:flex;align-items:center;gap:8px;margin-top:8px}
-button{border-radius:10px;border:1px solid #1f252b;background:#121518;color:#e9ecef;padding:8px 10px}
-input[type="text"],input[type="number"]{width:100%;border-radius:10px;border:1px solid #1f252b;background:#121518;color:#e9ecef;padding:8px 10px}
+body{margin:0;background:#0f1113;color:#e8eaed;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 110px;}
+h1{font-size:20px;margin:0 0 10px 0;}
+.card{background:#181b1f;border:1px solid #2b3036;border-radius:14px;padding:12px;margin-bottom:12px;}
+ul{list-style:none;padding:0;margin:0;}
+li{margin:8px 0;}
+pre{background:rgba(0,0,0,.2);border:1px solid #2b3036;border-radius:12px;padding:10px;color:#e8eaed;white-space:pre-wrap;}
+input{background:rgba(0,0,0,.2);border:1px solid #2b3036;border-radius:12px;padding:10px;color:#e8eaed;width:140px;}
+button{background:#7f8e3a;border:0;border-radius:12px;padding:10px 12px;color:#0b0d0f;font-weight:700;cursor:pointer;}
+footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(15,17,19,.92),rgba(15,17,19,.46));border-top:1px solid #2b3036;padding:10px 12px 12px;}
+footer span{color:#a9b1b7;font-size:12px;margin-left:10px;}
 </style>
 </head>
 <body>
+<div class="wrap">
 <h1>RAD DAD App</h1>
-<small>Dark mode, four meals, no nonsense.</small>
-<div class="card" id="day"></div>
-
 <div class="card">
-<div class="row"><strong>Weight</strong><small id="saved"></small></div>
-<div class="row">
-<input id="wt" type="number" placeholder="Weight"/>
+<ul>
+<li><label><input id="c0" type="checkbox" onchange="toggle(0)">Workout</label></li>
+<li><label><input id="c1" type="checkbox" onchange="toggle(1)">Meal 1</label></li>
+<li><label><input id="c2" type="checkbox" onchange="toggle(2)">Meal 2</label></li>
+<li><label><input id="c3" type="checkbox" onchange="toggle(3)">Meal 3</label></li>
+<li><label><input id="c4" type="checkbox" onchange="toggle(4)">Meal 4</label></li>
+<li><label><input id="c5" type="checkbox" onchange="toggle(5)">Beers after dinner</label></li>
+<li><label><input id="c6" type="checkbox" onchange="toggle(6)">Kitchen closed</label></li>
+</ul>
+</div>
+<div class="card">
+<strong>Workout routines</strong>
+<pre>Push 1: bench, incline DB, DB shoulder, pushdowns, laterals, walk
+Pull 1: pulldown, seated row, DB row, face pulls, curls, walk
+Legs: DB squat, DB RDL, step ups, calves, core, walk
+Push 2: DB bench, pulley press, DB shoulder, triceps, laterals, walk
+Pull 2: pulldown, cable row, DB row, face pulls, hammer curls, walk
+Light day: walk 20-30, light circuit
+Recovery: stretch 10-15, walk 30-45</pre>
+</div>
+<div class="card">
+<strong>Meal swaps</strong>
+<pre>Meal 1: post lift shake 40g, banana or oats
+Meal 2: yogurt or bar
+Meal 3: protein + rice or potato + veg
+Meal 4: one plate dinner, no grazing</pre>
+</div>
+<footer>
+<div><strong>Weight</strong></div>
+<input id="wt" type="number" placeholder="Enter weight">
 <button onclick="saveWeight()">Save</button>
+<span id="saved"></span>
+<div style="margin-top:8px"><strong>Beer cap</strong></div>
+<input id="cap" type="number" min="0" max="10">
+</footer>
 </div>
-</div>
-
-<div class="card">
-<div class="row"><strong>Settings</strong></div>
-<label>Beer cap <input id="cap" type="number" min="0" max="10"/></label>
-</div>
-
 <script>
-const S="jeep_dark_v1";
-const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const workouts={Mon:"Push",Tue:"Pull",Wed:"Legs",Thu:"Push",Fri:"Pull",Sat:"Light",Sun:"Recovery"};
-const wakeW="06:30", wakeE="07:05";
-const meals=[{n:"Meal 1",t:"08:05"},{n:"Meal 2",t:"11:00"},{n:"Meal 3",t:"12:45"},{n:"Meal 4",t:"18:30"}];
-const state=JSON.parse(localStorage.getItem(S)||'{"cap":3,"weights":{},"check":{}}');
-document.getElementById("cap").value=state.cap;
-
-function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function render(){
-  const k=todayKey(), d=new Date();
-  const dow=weekdays[d.getDay()];
-  const wake=(d.getDay()==0||d.getDay()==6)?wakeE:wakeW;
-  const items=[{title:"Workout",meta:workouts[dow]||""},...meals.map(m=>({title:m.n,meta:m.t})),{title:"Beer plan",meta:"Bud 55 cap "+state.cap},{title:"Kitchen closed",meta:"After dinner"}];
-  const chk=state.check[k]||Array(items.length).fill(false);
-  let html=`<div class="row"><strong>${dow} ${k}</strong><small>Wake ${wake}</small></div>`;
-  items.forEach((it,i)=>{const yes=chk[i]?"checked":"";html+=`<label><input type="checkbox" ${yes} onchange="toggle(${i})">${it.title}</label><small>${it.meta}</small>`;});
-  document.getElementById("day").innerHTML=html;
-  document.getElementById("saved").textContent=state.weights[k]?"Saved "+state.weights[k]:"";
-  state.check[k]=chk;
-}
-function toggle(i){
-  const k=todayKey();
-  state.check[k]=state.check[k]||Array(6).fill(false);
-  state.check[k][i]=!state.check[k][i];
-  save();
-  render();
-}
-function save(){
-  state.cap=parseInt(document.getElementById("cap").value||"3",10);
-  localStorage.setItem(S,JSON.stringify(state));
-}
-function saveWeight(){
-  const k=todayKey();
-  const n=parseFloat(document.getElementById("wt").value);
-  if(n>0) state.weights[k]=n; else delete state.weights[k];
-  save();
-  render();
-}
-document.getElementById("cap").onchange=()=>{save();render();};
+let state={check:Array(7).fill(false),weight:null,beerCap:3};
+try{const x=localStorage.getItem('rad_dad_v3');if(x) state=Object.assign(state,JSON.parse(x));}catch(e){}
+function save(){localStorage.setItem('rad_dad_v3',JSON.stringify(state));}
+function render(){state.check.forEach((v,i)=>document.getElementById('c'+i).checked=!!v);document.getElementById('wt').value=state.weight||'';document.getElementById('saved').textContent=state.weight?'Saved '+state.weight:'';document.getElementById('cap').value=state.beerCap;}
+function toggle(i){state.check[i]=!state.check[i];save();render();}
+function saveWeight(){const n=parseFloat(document.getElementById('wt').value);state.weight=n>0?n:null;state.beerCap=Math.max(0,Math.min(10,parseInt(document.getElementById('cap').value)||0));save();render();}
 render();
 </script>
 </body>
