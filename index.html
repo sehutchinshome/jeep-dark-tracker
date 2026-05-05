@@ -1,240 +1,492 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rad Dad BETA</title>
-<meta name="description" content="Rad Dad BETA: no-BS workout, body, habit, and progress tracking.">
-<style>
-:root{--bg:#09090b;--card:#15151a;--text:#f4f4f5;--muted:#a1a1aa;--line:#2f2f38;--accent:#f97316;--shadow:0 22px 70px rgba(0,0,0,.38)}
-*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(249,115,22,.18),transparent 34rem),radial-gradient(circle at bottom right,rgba(34,197,94,.10),transparent 32rem),var(--bg);min-height:100vh}
-header,main{width:min(1180px,calc(100% - 28px));margin:0 auto}header{padding:32px 0 18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
-h1{margin:0;font-size:clamp(2.3rem,7vw,5.3rem);line-height:.88;letter-spacing:-.075em}.tagline{margin:12px 0 0;color:var(--muted);max-width:720px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--muted);border-radius:999px;padding:9px 12px;font-weight:800;font-size:.82rem}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 16px}.tab{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:10px 13px;font-weight:900;cursor:pointer}.tab.active{background:var(--accent);color:#111;border-color:var(--accent)}
-.view{display:none;padding:0 0 38px}.view.active{display:block}
-.grid{display:grid;grid-template-columns:1fr;gap:16px}@media (min-width:930px){.grid.two{grid-template-columns:430px 1fr}}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.inner{padding:18px}
-h2{margin:0 0 14px;font-size:1.12rem;letter-spacing:-.03em}.muted{color:var(--muted)}
-form{display:grid;gap:12px}label{display:grid;gap:7px;color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;padding:12px;background:#0f0f13;color:var(--text);outline:none}textarea{min-height:82px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:rgba(249,115,22,.8);box-shadow:0 0 0 4px rgba(249,115,22,.12)}button{border:0;border-radius:15px;padding:12px 14px;background:var(--accent);color:#111;font-weight:950;cursor:pointer}button:hover{transform:translateY(-1px)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}@media(min-width:760px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:15px}
-.stat b{display:block;font-size:2rem;line-height:1;letter-spacing:-.055em}
-.stat span{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.075em;font-weight:900}
-.list{display:grid;gap:10px}.item{background:rgba(0,0,0,.17);border:1px solid var(--line);border-radius:18px;padding:14px}.itemTop{display:flex;justify-content:space-between;gap:12px;align-items:start}.meta{color:var(--muted);font-size:.9rem}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:999px;padding:5px 8px;color:var(--muted);font-weight:800;font-size:.78rem}
-.footerActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-
-table{width:100%;border-collapse:collapse;margin-top:12px}
-th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
-th{color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rad Dad BETA</title>
+  <meta name="description" content="Rad Dad BETA: multi-exercise workouts, editing, and local-only progress tracking." />
+  <style>
+    :root{
+      --bg:#09090b;
+      --card:#15151a;
+      --line:#2f2f38;
+      --text:#f4f4f5;
+      --muted:#a1a1aa;
+      --accent:#f97316;
+      --shadow:0 22px 70px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(249,115,22,.15),transparent 34rem),radial-gradient(circle at bottom right,rgba(34,197,94,.08),transparent 28rem),var(--bg);min-height:100vh}
+    header,main{width:min(1180px,calc(100% - 28px));margin:0 auto}
+    header{padding:32px 0 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between}
+    h1{margin:0;font-size:clamp(2.3rem,7vw,5.3rem);line-height:.88;letter-spacing:-.075em}
+    .tagline{margin:10px 0 0;color:var(--muted);max-width:720px}
+    .pill{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);padding:10px 12px;border-radius:999px;font-size:.85rem;white-space:nowrap}
+    nav{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 16px}
+    .tab{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:10px 12px;font-weight:900;cursor:pointer}
+    .tab.active{color:var(--text);border-color:rgba(249,115,22,.6);background:rgba(249,115,22,.08)}
+    .view{display:none;padding:0 0 38px}
+    .view.active{display:block}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media (min-width:930px){.grid.two{grid-template-columns:430px 1fr}}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+    .card-inner{padding:18px}
+    h2{margin:0 0 12px;font-size:1.12rem;letter-spacing:-.03em}
+    .muted{color:var(--muted)}
+    form{display:grid;gap:12px}
+    label{display:grid;gap:7px;color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 13px;background:#0f0f12;color:var(--text);outline:none}
+    input:focus,select:focus,textarea:focus{border-color:rgba(249,115,22,.8);box-shadow:0 0 0 4px rgba(249,115,22,.12)}
+    textarea{min-height:70px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    button{border:0;border-radius:16px;padding:13px 15px;background:var(--accent);color:#111;font-weight:900;cursor:pointer;transition:transform .12s ease,opacity .12s ease}
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(0);opacity:.9}
+    .ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:800}
+    .danger{background:transparent;border:1px solid rgba(239,68,68,.35);color:#fecaca;font-weight:800}
+    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}
+    @media (min-width:760px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:15px}
+    .stat b{display:block;font-size:2rem;line-height:1;letter-spacing:-.055em}
+    .stat span{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.075em;font-weight:900}
+    .list{display:grid;gap:10px}
+    .item{background:rgba(0,0,0,.17);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .itemTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .item h3{margin:0;font-size:1rem}
+    .itemMeta{color:var(--muted);font-size:.9rem;margin-top:4px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+    th{color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}
+  </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Rad Dad BETA</h1>
-    <p class="tagline">No-BS tracking for workouts, body stats, and progress. Everything lives in this browser.</p>
-  </div>
-  <div class="pill">Local-only</div>
-</header>
-<nav class="tabs" aria-label="Views">
-  <button class="tab active" data-view="today">Today</button>
-  <button class="tab" data-view="workouts">Workouts</button>
-  <button class="tab" data-view="body">Body</button>
-  <button class="tab" data-view="progress">Progress</button>
-  <button class="tab" data-view="settings">Settings</button>
-</nav>
-<main>
-  <section id="view-today" class="view active">
-    <div class="card">
-      <div class="inner">
-        <h2>Today</h2>
-        <p class="muted">Quick snapshot. If this looks empty, you haven’t logged anything lately.</p>
-        <div class="stats">
-          <div class="stat"><b id="statStreak">0</b><span>Day streak</span></div>
-          <div class="stat"><b id="statWeekWorkouts">0</b><span>Workouts this week</span></div>
-          <div class="stat"><b id="statWeekMinutes">0</b><span>Minutes this week</span></div>
-          <div class="stat"><b id="statLastWeight">–</b><span>Last body weight</span></div>
-        </div>
-        <button id="btnLogNow" type="button">Log a workout</button>
+  <header>
+    <div>
+      <h1>Rad Dad BETA</h1>
+      <p class="tagline">Multi-exercise workout sessions with editing, and local-only progress tracking.</p>
+    </div>
+    <div class="pill" id="statusPill">Local-only. Your data stays in this browser.</div>
+  </header>
+  <main>
+    <nav>
+      <button class="tab active" data-tab="workouts">Workouts</button>
+      <button class="tab" data-tab="progress">Progress</button>
+      <button class="tab" data-tab="settings">Settings</button>
+    </nav>
+
+    <section id="tab-workouts" class="view active">
+      <div class="grid two">
+        <section class="card">
+          <div class="card-inner">
+            <h2 id="sessionFormTitle">Log a session</h2>
+            <form id="sessionForm">
+              <label>Date <input id="sessionDate" type="date" required></label>
+              <label>Session label <input id="sessionLabel" placeholder="Upper body / Legs / Cardio"></label>
+              <label>Notes <textarea id="sessionNotes" placeholder="What did you do? What sucked? What improved?"></textarea></label>
+
+              <div class="card" style="background:rgba(0,0,0,.12);border-color:rgba(255,255,255,.07);">
+                <div class="card-inner">
+                  <h2 style="margin:0 0 10px">Exercise</h2>
+                  <label>Name <input id="exName" placeholder="Bench Press" required></label>
+                  <div class="row3">
+                    <label>Sets <input id="exSets" type="number" min="1" max="99" placeholder="3"></label>
+                    <label>Reps <input id="exReps" type="number" min="1" max="99" placeholder="8"></label>
+                    <label>Weight (lb) <input id="exWeight" type="number" min="0" max="2000" placeholder="185"></label>
+                  </div>
+                  <div class="row">
+                    <button type="button" id="addExerciseBtn">Add exercise</button>
+                    <button type="button" id="clearExerciseBtn" class="ghost">Clear exercise</button>
+                  </div>
+                  <div id="exerciseList" class="list" style="margin-top:12px"></div>
+                </div>
+              </div>
+
+              <div class="row">
+                <button type="submit" id="saveSessionBtn">Save session</button>
+                <button type="button" id="cancelEditBtn" class="ghost" style="display:none">Cancel edit</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-inner">
+            <div class="stats">
+              <div class="stat"><b id="statSessions">0</b><span>Sessions</span></div>
+              <div class="stat"><b id="statExercises">0</b><span>Exercises</span></div>
+              <div class="stat"><b id="statVolume">0</b><span>Total volume</span></div>
+              <div class="stat"><b id="statRecent">0</b><span>Last 7 days</span></div>
+            </div>
+
+            <h2 style="margin-bottom:6px">Workout log</h2>
+            <input id="search" type="search" placeholder="Filter by exercise or label..." style="margin-bottom:12px"/>
+            <div id="sessions" class="list"></div>
+          </div>
+        </section>
       </div>
-    </div>
-  </section>
-  <section id="view-workouts" class="view">
-    <div class="grid two">
-      <div class="card"><div class="inner">
-        <h2>Log workout</h2>
-        <form id="workoutForm">
-          <label>Date<input type="date" id="wDate" required></label>
-          <label>Type<select id="wType" required>
-            <option>Strength</option><option>Cardio</option><option>Mobility</option><option>Walk</option><option>Other</option>
-          </select></label>
-          <label>Exercise name<input id="wName" placeholder="Squat / Bench / Push-ups" required></label>
-          <div class="row3">
-            <label>Sets<input type="number" id="wSets" min="0" max="50" placeholder="3"></label>
-            <label>Reps<input type="number" id="wReps" min="0" max="100" placeholder="8"></label>
-            <label>Weight<input type="number" id="wWeight" min="0" max="2000" placeholder="185"></label>
-          </div>
-          <div class="row">
-            <label>Minutes<input type="number" id="wMinutes" min="1" max="600" placeholder="35" required></label>
-            <label>Distance<input type="number" id="wDistance" min="0" max="200" placeholder="0" aria-label="distance in miles"></label>
-          </div>
-          <label>Notes<textarea id="wNotes" placeholder="Warmup, sets, what sucked, what improved"></textarea></label>
-          <button type="submit">Save workout</button>
-        </form>
-      </div></div>
-      <div class="card"><div class="inner">
-        <div class="toolbar">
-          <h2>Workout log</h2>
-          <input id="wSearch" type="search" placeholder="Filter... (bench, squat, run)">
+    </section>
+
+    <section id="tab-progress" class="view">
+      <div class="card">
+        <div class="card-inner">
+          <h2>Best lifts (PR)</h2>
+          <div id="bestLifts" class="list"></div>
+          <p class="muted">PR weight per exercise name.</p>
         </div>
-        <div id="workoutList" class="list"></div>
-        <div class="footerActions">
-          <button class="ghost" type="button" id="seedWorkouts">Load sample workouts</button>
-          <button class="danger" type="button" id="clearWorkouts">Clear workouts</button>
-        </div>
-      </div></div>
-    </div>
-  </section>
-  <section id="view-body" class="view">
-    <div class="grid two">
-      <div class="card"><div class="inner">
-        <h2>Log body stats</h2>
-        <form id="bodyForm">
-          <label>Date<input type="date" id="bDate" required></label>
-          <div class="row">
-            <label>Weight (lb)<input type="number" id="bWeight" min="0" max="1000" placeholder="205" required></label>
-            <label>Waist (in)<input type="number" id="bWaist" min="0" max="100" placeholder="36"></label>
-          </div>
-          <label>Notes<textarea id="bNotes" placeholder="Photos? Measurements? Energy?"></textarea></label>
-          <button type="submit">Save body entry</button>
-        </form>
-      </div></div>
-      <div class="card"><div class="inner">
-        <div class="toolbar">
-          <h2>Body log</h2>
-          <input id="bSearch" type="search" placeholder="Filter...">
-        </div>
-        <div id="bodyList" class="list"></div>
-        <div class="footerActions">
-          <button class="ghost" type="button" id="seedBody">Load sample body</button>
-          <button class="danger" type="button" id="clearBody">Clear body</button>
-        </div>
-      </div></div>
-    </div>
-  </section>
-  <section id="view-progress" class="view">
-    <div class="card"><div class="inner">
-      <h2>Progress</h2>
-      <p class="muted">Best lifts and recent workout count. Simple, honest progress.</p>
-      <div id="progressSummary" class="stats"></div>
-      <h3>Best lifts (max weight)</h3>
-      <table aria-label="Best lifts">
-        <thead><tr><th>Exercise</th><th>Best weight</th><th>Last logged</th></tr></thead>
-        <tbody id="bestLifts"></tbody>
-      </table>
-    </div></div>
-  </section>
-  <section id="view-settings" class="view">
-    <div class="card"><div class="inner">
-      <h2>Settings</h2>
-      <p class="muted">Export your data, import it later, or erase it. No cloud.</p>
-      <div class="footerActions">
-        <button class="ghost" type="button" id="btnExport">Export JSON</button>
-        <button class="ghost" type="button" id="btnImport">Import JSON</button>
-        <button class="danger" type="button" id="btnClearAll">Clear ALL data</button>
       </div>
-      <input type="file" id="importFile" accept="application/json" style="display:none">
-    </div></div>
-  </section>
-</main>
-<script>
-const keys={w:'radDad.workouts.v2',b:'radDad.body.v2'};
-const todayISO=()=>new Date().toISOString().slice(0,10);
-const startOfWeek=(d)=>{const x=new Date(d);const diff=x.getDate()-x.getDay();x.setHours(0,0,0,0);x.setDate(diff);return x;};
-const safeJSON=(k)=>{try{return JSON.parse(localStorage.getItem(k))||[]}catch{return[]}};
-const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
-const key=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2);
+    </section>
 
-function streak(workouts){const set=new Set(workouts.map(w=>w.date));let s=0;const d=new Date();d.setHours(0,0,0,0);while(set.has(d.toISOString().slice(0,10))){s++;d.setDate(d.getDate()-1)}return s;}
-function sumWeek(workouts){const sow=startOfWeek(new Date());return workouts.filter(w=>new Date(w.date+'T00:00:00')>=sow)};
-function formatDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
+    <section id="tab-settings" class="view">
+      <div class="card">
+        <div class="card-inner">
+          <h2>Settings</h2>
+          <div class="footerActions">
+            <button type="button" class="ghost" id="exportBtn">Export JSON</button>
+            <label class="ghost" style="display:inline-flex;gap:10px;align-items:center">
+              Import JSON
+              <input id="importFile" type="file" accept="application/json" style="width:auto;padding:8px;border-radius:10px" />
+            </label>
+            <button type="button" class="danger" id="clearBtn">Clear all data</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-function renderToday(){const ws=safeJSON(keys.w);const bs=safeJSON(keys.b).sort((a,b)=>b.date.localeCompare(a.date));const wWeek=sumWeek(ws);document.getElementById('statStreak').textContent=streak(ws);document.getElementById('statWeekWorkouts').textContent=wWeek.length;document.getElementById('statWeekMinutes').textContent=wWeek.reduce((s,w)=>s+Number(w.minutes||0),0);
-const last=bs[0];document.getElementById('statLastWeight').textContent=last?Number(last.weight).toFixed(1)+' lb':'–';}
+  </main>
 
-function renderWorkouts(){const list=document.getElementById('workoutList');const ws=safeJSON(keys.w).sort((a,b)=>b.date.localeCompare(a.date));const q=(document.getElementById('wSearch').value||'').toLowerCase();const filtered=ws.filter(w=>`${w.type} ${w.name} ${w.notes}`.toLowerCase().includes(q));
-if(!filtered.length){list.innerHTML='<div class="empty">No workouts yet. Log one. Future You is impatient.</div>';return}
-list.innerHTML=filtered.map(w=>`<article class="item"><div class="itemTop"><div><b>${esc(w.name)}</b><div class="meta">${esc(w.type)} · ${formatDate(w.date)} · ${Number(w.minutes)} min</div></div><button class="danger" type="button" data-del="${esc(w.id)}">Delete</button></div><div class="chips"><span class="chip">${w.sets||0} sets</span><span class="chip">${w.reps||0} reps</span><span class="chip">${w.weight||0} lb</span><span class="chip">${w.distance||0} mi</span></div>${w.notes?`<p class="muted" style="margin-top:10px">${esc(w.notes)}</p>`:''}</article>`).join('');}
+  <script>
+    const STORAGE_KEY = 'radDad.sessions.v1';
+    const el = (id) => document.getElementById(id);
+    const todayIso = () => new Date().toISOString().slice(0, 10);
 
-function renderBody(){const list=document.getElementById('bodyList');const bs=safeJSON(keys.b).sort((a,b)=>b.date.localeCompare(a.date));const q=(document.getElementById('bSearch').value||'').toLowerCase();const filtered=bs.filter(b=>`${b.notes}`.toLowerCase().includes(q));
-if(!filtered.length){list.innerHTML='<div class="empty">No body entries yet.</div>';return}
-list.innerHTML=filtered.map(b=>`<article class="item"><div class="itemTop"><div><b>${Number(b.weight).toFixed(1)} lb</b><div class="meta">${formatDate(b.date)} · waist ${b.waist||0} in</div></div><button class="danger" type="button" data-delb="${esc(b.id)}">Delete</button></div>${b.notes?`<p class="muted" style="margin-top:10px">${esc(b.notes)}</p>`:''}</article>`).join('');}
+    let sessions = loadSessions();
+    let sessionExercises = [];
+    let editingSessionId = null;
+    let editingExerciseIndex = null;
 
-function renderProgress(){const ws=safeJSON(keys.w);const recent=ws.sort((a,b)=>b.date.localeCompare(a.date));const count30=recent.filter(w=>{const d=new Date();d.setDate(d.getDate()-30);return new Date(w.date+'T00:00:00')>=d}).length;
-const m=sumWeek(ws).reduce((s,w)=>s+Number(w.minutes||0),0);
-const cards=[{id:'pDays',label:'Last 30 days',val:count30},{id:'pWeek',label:'Minutes this week',val:m},{id:'pTotal',label:'Total workouts',val:ws.length},{id:'pUnique',label:'Exercises logged',val:new Set(ws.map(w=>w.name)).size}];
-const wrap=document.getElementById('progressSummary');wrap.innerHTML=cards.map(c=>`<div class="stat"><b>${c.val}</b><span>${c.label}</span></div>`).join('');
-const map=new Map();for(const w of ws){const name=w.name||'';const weight=Number(w.weight||0);if(!name)continue;const cur=map.get(name);if(!cur||weight>cur.weight){map.set(name,{weight, date:w.date});}}
-const rows=[...map.entries()].sort((a,b)=>b[1].weight-a[1].weight);document.getElementById('bestLifts').innerHTML=rows.map(([name,v])=>`<tr><td>${esc(name)}</td><td>${v.weight} lb</td><td>${formatDate(v.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">No lifts logged yet.</td></tr>';
-}
+    el('sessionDate').value = todayIso();
 
-function setView(v){document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));document.getElementById('view-'+v).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));if(v==='today')renderToday();if(v==='workouts')renderWorkouts();if(v==='body')renderBody();if(v==='progress')renderProgress();}
+    document.querySelectorAll('.tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+        btn.classList.add('active');
+        el(`tab-${btn.dataset.tab}`).classList.add('active');
+        render();
+      });
+    });
 
-document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>setView(btn.dataset.view)));
+    el('addExerciseBtn').addEventListener('click', () => {
+      const name = el('exName').value.trim();
+      const sets = numberOrNull(el('exSets').value);
+      const reps = numberOrNull(el('exReps').value);
+      const weight = numberOrNull(el('exWeight').value);
 
-document.getElementById('btnLogNow').addEventListener('click',()=>{setView('workouts');document.getElementById('wName').focus()});
+      if (!name) return alert('Exercise name required.');
+      const exercise = { name, sets, reps, weight };
 
-// Workouts
-const wForm=document.getElementById('workoutForm');document.getElementById('wDate').value=todayISO();
-wForm.addEventListener('submit',e=>{e.preventDefault();const ws=safeJSON(keys.w);ws.push({id:key(),date:wForm.wDate.value||todayISO(),type:wForm.wType.value,name:wForm.wName.value.trim(),sets:Number(wForm.wSets.value||0),reps:Number(wForm.wReps.value||0),weight:Number(wForm.wWeight.value||0),minutes:Number(wForm.wMinutes.value||0),distance:Number(wForm.wDistance.value||0),notes:wForm.wNotes.value.trim(),createdAt:new Date().toISOString()});save(keys.w,ws);wForm.reset();wForm.wDate.value=todayISO();renderWorkouts();renderToday();});
+      if (editingExerciseIndex !== null) {
+        sessionExercises[editingExerciseIndex] = exercise;
+      } else {
+        sessionExercises.push(exercise);
+      }
+      resetExerciseForm();
+      renderExerciseList();
+    });
 
-document.getElementById('wSearch').addEventListener('input',renderWorkouts);
+    el('clearExerciseBtn').addEventListener('click', () => {
+      resetExerciseForm();
+      editingExerciseIndex = null;
+      el('addExerciseBtn').textContent = 'Add exercise';
+    });
 
-document.getElementById('workoutList').addEventListener('click',e=>{const id=e.target.dataset.del;if(!id)return;if(!confirm('Delete this workout?'))return;save(keys.w,safeJSON(keys.w).filter(w=>w.id!==id));renderWorkouts();renderToday();});
+    el('sessionForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!sessionExercises.length) return alert('Add at least one exercise to the session.');
 
-document.getElementById('clearWorkouts').addEventListener('click',()=>{if(!confirm('Clear all workouts?'))return;save(keys.w,[]);renderWorkouts();renderToday();});
+      const session = {
+        id: editingSessionId || uuid(),
+        date: el('sessionDate').value,
+        label: el('sessionLabel').value.trim(),
+        notes: el('sessionNotes').value.trim(),
+        exercises: sessionExercises.slice(),
+        createdAt: editingSessionId ? findSession(editingSessionId)?.createdAt || new Date().toISOString() : new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-document.getElementById('seedWorkouts').addEventListener('click',()=>{const now=new Date();const isoAgo=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};save(keys.w,[
-{id:key(),date:isoAgo(0),type:'Strength',name:'Bench press',sets:3,reps:8,weight:185,minutes:42,distance:0,notes:'Good setup. Last reps spicy.',createdAt:new Date().toISOString()},
-{id:key(),date:isoAgo(1),type:'Walk',name:'Walk',sets:0,reps:0,weight:0,minutes:30,distance:1.5,notes:'Neighborhood loop.',createdAt:new Date().toISOString()},
-{id:key(),date:isoAgo(3),type:'Strength',name:'Squat',sets:3,reps:5,weight:225,minutes:38,distance:0,notes:'Depth felt decent.',createdAt:new Date().toISOString()}
-]);renderWorkouts();renderToday();});
+      sessions = sessions.filter((s) => s.id !== session.id).concat(session);
+      saveSessions();
+      resetSessionForm();
+      render();
+    });
 
-// Body
-const bForm=document.getElementById('bodyForm');document.getElementById('bDate').value=todayISO();
-bForm.addEventListener('submit',e=>{e.preventDefault();const bs=safeJSON(keys.b);bs.push({id:key(),date:bForm.bDate.value||todayISO(),weight:Number(bForm.bWeight.value||0),waist:Number(bForm.bWaist.value||0),notes:bForm.bNotes.value.trim(),createdAt:new Date().toISOString()});save(keys.b,bs);bForm.reset();bForm.bDate.value=todayISO();renderBody();renderToday();});
+    el('cancelEditBtn').addEventListener('click', () => {
+      resetSessionForm();
+      render();
+    });
 
-document.getElementById('bSearch').addEventListener('input',renderBody);
+    el('search').addEventListener('input', render);
+    el('clearBtn').addEventListener('click', () => {
+      if (!confirm('Clear all data?')) return;
+      sessions = [];
+      saveSessions();
+      resetSessionForm();
+      render();
+    });
 
-document.getElementById('bodyList').addEventListener('click',e=>{const id=e.target.dataset.delb;if(!id)return;if(!confirm('Delete this body entry?'))return;save(keys.b,safeJSON(keys.b).filter(b=>b.id!==id));renderBody();renderToday();});
+    el('exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(sessions, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `RadDadBETA-${todayIso()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
 
-document.getElementById('clearBody').addEventListener('click',()=>{if(!confirm('Clear all body entries?'))return;save(keys.b,[]);renderBody();renderToday();});
+    el('importFile').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      file.text().then((txt) => {
+        try {
+          const data = JSON.parse(txt);
+          if (!Array.isArray(data)) throw new Error('Invalid file');
+          sessions = data;
+          saveSessions();
+          resetSessionForm();
+          render();
+        } catch (err) {
+          alert('Import failed: ' + err.message);
+        }
+      });
+    });
 
-document.getElementById('seedBody').addEventListener('click',()=>{const now=new Date();const isoAgo=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};save(keys.b,[
-{id:key(),date:isoAgo(0),weight:204.8,waist:36.0,notes:'Baseline.',createdAt:new Date().toISOString()},
-{id:key(),date:isoAgo(7),weight:208.2,waist:36.5,notes:'Vacation damage.',createdAt:new Date().toISOString()}
-]);renderBody();renderToday();});
+    function render() {
+      renderExerciseList();
+      renderLog();
+      renderStats();
+      renderBestLifts();
+    }
 
-// Settings export/import
-function exportAll(){const data={workouts:safeJSON(keys.w),body:safeJSON(keys.b),exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`RadDadBETA-${todayISO()}.json`;a.click();URL.revokeObjectURL(url);}
+    function renderExerciseList() {
+      const list = el('exerciseList');
+      if (!sessionExercises.length) {
+        list.innerHTML = '<p class="muted">No exercises yet.</p>';
+        return;
+      }
+      list.innerHTML = sessionExercises
+        .map((ex, idx) => {
+          const vol = volume(ex);
+          return `<div class="item"><div class="itemTop"><div><h3>${escapeHtml(ex.name)}</h3><div class="itemMeta">${fmtSetsReps(ex)}${ex.weight != null ? ` · ${ex.weight} lb` : ''}${vol ? ` · volume ${vol}` : ''}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="ghost" onclick="startEditExercise(${idx})">Edit</button><button type="button" class="danger" onclick="deleteExercise(${idx})">Remove</button></div></div></div>`;
+        })
+        .join('');
+      el('addExerciseBtn').textContent = editingExerciseIndex !== null ? 'Update exercise' : 'Add exercise';
+    }
 
-document.getElementById('btnExport').addEventListener('click',exportAll);
+    function renderLog() {
+      const container = el('sessions');
+      const q = el('search').value.trim().toLowerCase();
+      const list = sessions
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt))
+        .filter((s) => {
+          if (!q) return true;
+          const text = `${s.date} ${s.label} ${s.notes} ${s.exercises.map((e) => e.name).join(' ')}`.toLowerCase();
+          return text.includes(q);
+        });
 
-document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('importFile').click());
+      if (!list.length) {
+        container.innerHTML = '<div class="item"><p class="muted">No sessions yet.</p></div>';
+        return;
+      }
 
-const file=document.getElementById('importFile');file.addEventListener('change',()=>{const f=file.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!confirm('Import will replace current data. Continue?'))return;
-if(Array.isArray(data.workouts))save(keys.w,data.workouts);
-if(Array.isArray(data.body))save(keys.b,data.body);
-renderToday();renderWorkouts();renderBody();renderProgress();alert('Imported.');}
-catch(e){alert('Import failed: invalid JSON.');}};reader.readAsText(f);file.value='';});
+      container.innerHTML = list
+        .map((s) => {
+          const totVol = totalVolume(s);
+          return `
+          <div class="item">
+            <div class="itemTop">
+              <div>
+                <h3>${escapeHtml(s.label || 'Session')}</h3>
+                <div class="itemMeta">${fmtDate(s.date)} · ${s.exercises.length} exercise(s)${totVol ? ` · volume ${totVol}` : ''}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button type="button" class="ghost" onclick="startEditSession('${s.id}')">Edit</button>
+                <button type="button" class="danger" onclick="deleteSession('${s.id}')">Delete</button>
+              </div>
+            </div>
+            ${s.notes ? `<p class="muted" style="margin:10px 0 0">${escapeHtml(s.notes)}</p>` : ''}
+            <table>
+              <thead><tr><th>Name</th><th>Sets×Reps</th><th>Weight</th><th>Volume</th></tr></thead>
+              <tbody>
+                ${s.exercises
+                  .map((ex) => {
+                    const vol = volume(ex);
+                    return `<tr><td>${escapeHtml(ex.name)}</td><td>${fmtSetsReps(ex)}</td><td>${ex.weight != null ? ex.weight + ' lb' : ''}</td><td>${vol ? vol : ''}</td></tr>`;
+                  })
+                  .join('')}
+              </tbody>
+            </table>
+          </div>`;
+        })
+        .join('');
+    }
 
-// Clear all
-const clearAll=()=>{if(!confirm('Erase EVERYTHING?'))return;save(keys.w,[]);save(keys.b,[]);renderToday();renderWorkouts();renderBody();renderProgress();};
-document.getElementById('btnClearAll').addEventListener('click',clearAll);
+    function renderStats() {
+      const vol = sessions.reduce((sum, s) => sum + totalVolume(s), 0);
+      const seven = new Date();
+      seven.setDate(seven.getDate() - 6);
+      seven.setHours(0, 0, 0, 0);
+      const recent = sessions.filter((s) => new Date(`${s.date}T00:00:00`) >= seven).length;
 
-renderToday();renderWorkouts();renderBody();renderProgress();
-</script>
+      el('statSessions').textContent = sessions.length;
+      el('statExercises').textContent = sessions.reduce((sum, s) => sum + s.exercises.length, 0);
+      el('statVolume').textContent = vol;
+      el('statRecent').textContent = recent;
+    }
+
+    function renderBestLifts() {
+      const pr = {};
+      for (const s of sessions) {
+        for (const ex of s.exercises) {
+          if (ex.weight == null) continue;
+          const key = ex.name.trim();
+          if (!key) continue;
+          if (!pr[key] || ex.weight > pr[key].weight) {
+            pr[key] = { weight: Number(ex.weight), sessionDate: s.date };
+          }
+        }
+      }
+      const list = Object.entries(pr)
+        .sort((a, b) => b[1].weight - a[1].weight)
+        .map(([name, info]) => `<div class="item"><div class="itemTop"><div><h3>${escapeHtml(name)}</h3><div class="itemMeta">${info.weight} lb · ${fmtDate(info.sessionDate)}</div></div></div></div>`)
+        .join('');
+      el('bestLifts').innerHTML = list || '<p class="muted">No PRs yet. Log some lifts.</p>';
+    }
+
+    function resetExerciseForm() {
+      el('exName').value = '';
+      el('exSets').value = '';
+      el('exReps').value = '';
+      el('exWeight').value = '';
+      editingExerciseIndex = null;
+      el('addExerciseBtn').textContent = 'Add exercise';
+    }
+
+    function resetSessionForm() {
+      editingSessionId = null;
+      sessionExercises = [];
+      resetExerciseForm();
+      el('sessionFormTitle').textContent = 'Log a session';
+      el('saveSessionBtn').textContent = 'Save session';
+      el('cancelEditBtn').style.display = 'none';
+      el('sessionDate').value = todayIso();
+      el('sessionLabel').value = '';
+      el('sessionNotes').value = '';
+    }
+
+    function startEditExercise(idx) {
+      const ex = sessionExercises[idx];
+      if (!ex) return;
+      editingExerciseIndex = idx;
+      el('exName').value = ex.name;
+      el('exSets').value = ex.sets || '';
+      el('exReps').value = ex.reps || '';
+      el('exWeight').value = ex.weight || '';
+      el('addExerciseBtn').textContent = 'Update exercise';
+    }
+
+    function deleteExercise(idx) {
+      sessionExercises.splice(idx, 1);
+      resetExerciseForm();
+      renderExerciseList();
+    }
+
+    function startEditSession(id) {
+      const session = findSession(id);
+      if (!session) return;
+      editingSessionId = id;
+      sessionExercises = (session.exercises || []).map((ex) => ({ name: ex.name, sets: ex.sets, reps: ex.reps, weight: ex.weight }));
+      el('sessionFormTitle').textContent = 'Edit session';
+      el('saveSessionBtn').textContent = 'Update session';
+      el('cancelEditBtn').style.display = 'inline-flex';
+      el('sessionDate').value = session.date;
+      el('sessionLabel').value = session.label || '';
+      el('sessionNotes').value = session.notes || '';
+      resetExerciseForm();
+      renderExerciseList();
+    }
+
+    function deleteSession(id) {
+      if (!confirm('Delete this session?')) return;
+      sessions = sessions.filter((s) => s.id !== id);
+      saveSessions();
+      if (editingSessionId === id) resetSessionForm();
+      render();
+    }
+
+    function saveSessions() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+    }
+
+    function loadSessions() {
+      try {
+        const val = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return Array.isArray(val) ? val : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function findSession(id) {
+      return sessions.find((s) => s.id === id);
+    }
+
+    function numberOrNull(v) {
+      if (v === '' || v == null) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function volume(ex) {
+      if (ex.sets == null || ex.reps == null || ex.weight == null) return 0;
+      return Number(ex.sets) * Number(ex.reps) * Number(ex.weight);
+    }
+
+    function totalVolume(session) {
+      return (session.exercises || []).reduce((sum, ex) => sum + volume(ex), 0);
+    }
+
+    function fmtSetsReps(ex) {
+      return `${ex.sets != null ? ex.sets : ''}${ex.sets != null && ex.reps != null ? '×' : ''}${ex.reps != null ? ex.reps : ''}`;
+    }
+
+    function fmtDate(iso) {
+      return new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function uuid() {
+      return (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`);
+    }
+
+    // expose minimal editing helpers for inline buttons in rendered HTML
+    window.startEditSession = startEditSession;
+    window.deleteSession = deleteSession;
+    window.startEditExercise = startEditExercise;
+    window.deleteExercise = deleteExercise;
+
+    render();
+  </script>
 </body>
 </html>
