@@ -1,93 +1,240 @@
-
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rad Dad BETA</title>
-  <meta name="description" content="Rad Dad BETA: no-BS workout, body, habit, and progress tracking." />
-  <style>
-    :root {
-      --bg: #09090b;
-      --card: #15151a;
-      --card2: #1f1f27;
-      --text: #f4f4f5;
-      --muted: #a1a1aa;
-      --line: #2f2f38;
-      --accent: #f97316;
-      --good: #22c55e;
-      --warn: #facc15;
-      --bad: #ef4444;
-      --blue: #38bdf8;
-      --shadow: 0 22px 70px rgba(0,0,0,.38);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(249,115,22,.18), transparent 34rem),
-        radial-gradient(circle at 85% 20%, rgba(56,189,248,.09), transparent 28rem),
-        radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 32rem),
-        var(--bg);
-      min-height: 100vh;
-    }
-    header, main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; }
-    header { padding: 32px 0 18px; display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    h1 { margin: 0; font-size: clamp(2.3rem, 7vw, 5.3rem); line-height: .88; letter-spacing: -.075em; }
-    .tagline { margin: 12px 0 0; color: var(--muted); max-width: 720px; }
-    .pill { border: 1px solid var(--line); background: rgba(255,255,255,.045); color: var(--muted); border-radius: 999px; padding: 9px 12px; font-weight: 800; font-size: .82rem; }
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 0 16px; }
-    .tab { border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--muted); border-radius: 999px; padding: 10px 13px; font-weight: 900; cursor: pointer; }
-    .tab.active { background: var(--accent); color: #111; border-color: var(--accent); }
-    .view { display: none; padding: 0 0 38px; }
-    .view.active { display: block; }
-    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 930px) { .grid.two { grid-template-columns: 430px 1fr; } .grid.three { grid-template-columns: repeat(3, 1fr); } }
-    .card { background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
-    .inner { padding: 18px; }
-    h2 { margin: 0 0 14px; font-size: 1.12rem; letter-spacing: -.03em; }
-    h3 { margin: 0 0 8px; font-size: 1rem; }
-    p { line-height: 1.45; }
-    .muted { color: var(--muted); }
-    form { display: grid; gap: 12px; }
-    label { display: grid; gap: 7px; color: var(--muted); font-size: .78rem; font-weight: 900; text-transform: uppercase; letter-spacing: .075em; }
-    input, select, textarea, button { font: inherit; }
-    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 15px; padding: 12px; background: #0f0f13; color: var(--text); outline: none; }
-    textarea { min-height: 82px; resize: vertical; }
-    input:focus, select:focus, textarea:focus { border-color: rgba(249,115,22,.8); box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
-    button { border: 0; border-radius: 15px; padding: 12px 14px; background: var(--accent); color: #111; font-weight: 950; cursor: pointer; }
-    button:hover { transform: translateY(-1px); }
-    .ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); }
-    .danger { background: transparent; border: 1px solid rgba(239,68,68,.42); color: #fecaca; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-    @media (min-width: 760px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-    .stat { background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 20px; padding: 15px; }
-    .stat b { display: block; font-size: 2rem; line-height: 1; letter-spacing: -.055em; }
-    .stat span { color: var(--muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 900; }
-    .toolbar { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
-    .list { display: grid; gap: 10px; }
-    .item { background: rgba(0,0,0,.17); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
-    .itemTop { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
-    .meta { color: var(--muted); font-size: .9rem; }
-    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
-    .chip { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-weight: 800; font-size: .78rem; }
-    .empty { border: 1px dashed var(--line); border-radius: 18px; padding: 24px; text-align: center; color: var(--muted); background: rgba(255,255,255,.025); }
-    .exerciseRows { display: grid; gap: 10px; }
-    .exercise { border: 1px solid var(--line); border-radius: 18px; padding: 12px; background: rgba(0,0,0,.16); display: grid; gap: 10px; }
-    .mini { font-size: .85rem; padding: 8px 10px; border-radius: 12px; }
-    .score { font-size: clamp(2.3rem, 6vw, 4rem); font-weight: 950; letter-spacing: -.08em; margin: 0; }
-    .good { color: var(--good); } .warn { color: var(--warn); } .bad { color: var(--bad); } .blue { color: var(--blue); }
-    .footerActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-    .progressBar { height: 11px; border-radius: 999px; background: #0d0d10; overflow: hidden; border: 1px solid var(--line); }
-    .progressBar > div { height: 100%; background: var(--accent); width: 0%; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rad Dad BETA</title>
+<meta name="description" content="Rad Dad BETA: no-BS workout, body, habit, and progress tracking.">
+<style>
+:root{--bg:#09090b;--card:#15151a;--text:#f4f4f5;--muted:#a1a1aa;--line:#2f2f38;--accent:#f97316;--shadow:0 22px 70px rgba(0,0,0,.38)}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at top left,rgba(249,115,22,.18),transparent 34rem),radial-gradient(circle at bottom right,rgba(34,197,94,.10),transparent 32rem),var(--bg);min-height:100vh}
+header,main{width:min(1180px,calc(100% - 28px));margin:0 auto}header{padding:32px 0 18px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+h1{margin:0;font-size:clamp(2.3rem,7vw,5.3rem);line-height:.88;letter-spacing:-.075em}.tagline{margin:12px 0 0;color:var(--muted);max-width:720px}.pill{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--muted);border-radius:999px;padding:9px 12px;font-weight:800;font-size:.82rem}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 16px}.tab{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);border-radius:999px;padding:10px 13px;font-weight:900;cursor:pointer}.tab.active{background:var(--accent);color:#111;border-color:var(--accent)}
+.view{display:none;padding:0 0 38px}.view.active{display:block}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}@media (min-width:930px){.grid.two{grid-template-columns:430px 1fr}}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.inner{padding:18px}
+h2{margin:0 0 14px;font-size:1.12rem;letter-spacing:-.03em}.muted{color:var(--muted)}
+form{display:grid;gap:12px}label{display:grid;gap:7px;color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;padding:12px;background:#0f0f13;color:var(--text);outline:none}textarea{min-height:82px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:rgba(249,115,22,.8);box-shadow:0 0 0 4px rgba(249,115,22,.12)}button{border:0;border-radius:15px;padding:12px 14px;background:var(--accent);color:#111;font-weight:950;cursor:pointer}button:hover{transform:translateY(-1px)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}@media(min-width:760px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:15px}
+.stat b{display:block;font-size:2rem;line-height:1;letter-spacing:-.055em}
+.stat span{color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.075em;font-weight:900}
+.list{display:grid;gap:10px}.item{background:rgba(0,0,0,.17);border:1px solid var(--line);border-radius:18px;padding:14px}.itemTop{display:flex;justify-content:space-between;gap:12px;align-items:start}.meta{color:var(--muted);font-size:.9rem}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:999px;padding:5px 8px;color:var(--muted);font-weight:800;font-size:.78rem}
+.footerActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-size:.78rem;font-weight:900;text-transform:uppercase;letter-spacing:.075em}
+</style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>Rad Dad BETA</h1>
-      <p class="tagline">No-BS tracking for workouts, body stats, daily habits, and the slow demolition of dad-sludge.</p>
+<header>
+  <div>
+    <h1>Rad Dad BETA</h1>
+    <p class="tagline">No-BS tracking for workouts, body stats, and progress. Everything lives in this browser.</p>
+  </div>
+  <div class="pill">Local-only</div>
+</header>
+<nav class="tabs" aria-label="Views">
+  <button class="tab active" data-view="today">Today</button>
+  <button class="tab" data-view="workouts">Workouts</button>
+  <button class="tab" data-view="body">Body</button>
+  <button class="tab" data-view="progress">Progress</button>
+  <button class="tab" data-view="settings">Settings</button>
+</nav>
+<main>
+  <section id="view-today" class="view active">
+    <div class="card">
+      <div class="inner">
+        <h2>Today</h2>
+        <p class="muted">Quick snapshot. If this looks empty, you haven’t logged anything lately.</p>
+        <div class="stats">
+          <div class="stat"><b id="statStreak">0</b><span>Day streak</span></div>
+          <div class="stat"><b id="statWeekWorkouts">0</b><span>Workouts this week</span></div>
+          <div class="stat"><b id="statWeekMinutes">0</b><span>Minutes this week</span></div>
+          <div class="stat"><b id="statLastWeight">–</b><span>Last body weight</span></div>
+        </div>
+        <button id="btnLogNow" type="button">Log a workout</button>
+      </div>
     </div>
+  </section>
+  <section id="view-workouts" class="view">
+    <div class="grid two">
+      <div class="card"><div class="inner">
+        <h2>Log workout</h2>
+        <form id="workoutForm">
+          <label>Date<input type="date" id="wDate" required></label>
+          <label>Type<select id="wType" required>
+            <option>Strength</option><option>Cardio</option><option>Mobility</option><option>Walk</option><option>Other</option>
+          </select></label>
+          <label>Exercise name<input id="wName" placeholder="Squat / Bench / Push-ups" required></label>
+          <div class="row3">
+            <label>Sets<input type="number" id="wSets" min="0" max="50" placeholder="3"></label>
+            <label>Reps<input type="number" id="wReps" min="0" max="100" placeholder="8"></label>
+            <label>Weight<input type="number" id="wWeight" min="0" max="2000" placeholder="185"></label>
+          </div>
+          <div class="row">
+            <label>Minutes<input type="number" id="wMinutes" min="1" max="600" placeholder="35" required></label>
+            <label>Distance<input type="number" id="wDistance" min="0" max="200" placeholder="0" aria-label="distance in miles"></label>
+          </div>
+          <label>Notes<textarea id="wNotes" placeholder="Warmup, sets, what sucked, what improved"></textarea></label>
+          <button type="submit">Save workout</button>
+        </form>
+      </div></div>
+      <div class="card"><div class="inner">
+        <div class="toolbar">
+          <h2>Workout log</h2>
+          <input id="wSearch" type="search" placeholder="Filter... (bench, squat, run)">
+        </div>
+        <div id="workoutList" class="list"></div>
+        <div class="footerActions">
+          <button class="ghost" type="button" id="seedWorkouts">Load sample workouts</button>
+          <button class="danger" type="button" id="clearWorkouts">Clear workouts</button>
+        </div>
+      </div></div>
+    </div>
+  </section>
+  <section id="view-body" class="view">
+    <div class="grid two">
+      <div class="card"><div class="inner">
+        <h2>Log body stats</h2>
+        <form id="bodyForm">
+          <label>Date<input type="date" id="bDate" required></label>
+          <div class="row">
+            <label>Weight (lb)<input type="number" id="bWeight" min="0" max="1000" placeholder="205" required></label>
+            <label>Waist (in)<input type="number" id="bWaist" min="0" max="100" placeholder="36"></label>
+          </div>
+          <label>Notes<textarea id="bNotes" placeholder="Photos? Measurements? Energy?"></textarea></label>
+          <button type="submit">Save body entry</button>
+        </form>
+      </div></div>
+      <div class="card"><div class="inner">
+        <div class="toolbar">
+          <h2>Body log</h2>
+          <input id="bSearch" type="search" placeholder="Filter...">
+        </div>
+        <div id="bodyList" class="list"></div>
+        <div class="footerActions">
+          <button class="ghost" type="button" id="seedBody">Load sample body</button>
+          <button class="danger" type="button" id="clearBody">Clear body</button>
+        </div>
+      </div></div>
+    </div>
+  </section>
+  <section id="view-progress" class="view">
+    <div class="card"><div class="inner">
+      <h2>Progress</h2>
+      <p class="muted">Best lifts and recent workout count. Simple, honest progress.</p>
+      <div id="progressSummary" class="stats"></div>
+      <h3>Best lifts (max weight)</h3>
+      <table aria-label="Best lifts">
+        <thead><tr><th>Exercise</th><th>Best weight</th><th>Last logged</th></tr></thead>
+        <tbody id="bestLifts"></tbody>
+      </table>
+    </div></div>
+  </section>
+  <section id="view-settings" class="view">
+    <div class="card"><div class="inner">
+      <h2>Settings</h2>
+      <p class="muted">Export your data, import it later, or erase it. No cloud.</p>
+      <div class="footerActions">
+        <button class="ghost" type="button" id="btnExport">Export JSON</button>
+        <button class="ghost" type="button" id="btnImport">Import JSON</button>
+        <button class="danger" type="button" id="btnClearAll">Clear ALL data</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div></div>
+  </section>
+</main>
+<script>
+const keys={w:'radDad.workouts.v2',b:'radDad.body.v2'};
+const todayISO=()=>new Date().toISOString().slice(0,10);
+const startOfWeek=(d)=>{const x=new Date(d);const diff=x.getDate()-x.getDay();x.setHours(0,0,0,0);x.setDate(diff);return x;};
+const safeJSON=(k)=>{try{return JSON.parse(localStorage.getItem(k))||[]}catch{return[]}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const key=()=>crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2);
+
+function streak(workouts){const set=new Set(workouts.map(w=>w.date));let s=0;const d=new Date();d.setHours(0,0,0,0);while(set.has(d.toISOString().slice(0,10))){s++;d.setDate(d.getDate()-1)}return s;}
+function sumWeek(workouts){const sow=startOfWeek(new Date());return workouts.filter(w=>new Date(w.date+'T00:00:00')>=sow)};
+function formatDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
+
+function renderToday(){const ws=safeJSON(keys.w);const bs=safeJSON(keys.b).sort((a,b)=>b.date.localeCompare(a.date));const wWeek=sumWeek(ws);document.getElementById('statStreak').textContent=streak(ws);document.getElementById('statWeekWorkouts').textContent=wWeek.length;document.getElementById('statWeekMinutes').textContent=wWeek.reduce((s,w)=>s+Number(w.minutes||0),0);
+const last=bs[0];document.getElementById('statLastWeight').textContent=last?Number(last.weight).toFixed(1)+' lb':'–';}
+
+function renderWorkouts(){const list=document.getElementById('workoutList');const ws=safeJSON(keys.w).sort((a,b)=>b.date.localeCompare(a.date));const q=(document.getElementById('wSearch').value||'').toLowerCase();const filtered=ws.filter(w=>`${w.type} ${w.name} ${w.notes}`.toLowerCase().includes(q));
+if(!filtered.length){list.innerHTML='<div class="empty">No workouts yet. Log one. Future You is impatient.</div>';return}
+list.innerHTML=filtered.map(w=>`<article class="item"><div class="itemTop"><div><b>${esc(w.name)}</b><div class="meta">${esc(w.type)} · ${formatDate(w.date)} · ${Number(w.minutes)} min</div></div><button class="danger" type="button" data-del="${esc(w.id)}">Delete</button></div><div class="chips"><span class="chip">${w.sets||0} sets</span><span class="chip">${w.reps||0} reps</span><span class="chip">${w.weight||0} lb</span><span class="chip">${w.distance||0} mi</span></div>${w.notes?`<p class="muted" style="margin-top:10px">${esc(w.notes)}</p>`:''}</article>`).join('');}
+
+function renderBody(){const list=document.getElementById('bodyList');const bs=safeJSON(keys.b).sort((a,b)=>b.date.localeCompare(a.date));const q=(document.getElementById('bSearch').value||'').toLowerCase();const filtered=bs.filter(b=>`${b.notes}`.toLowerCase().includes(q));
+if(!filtered.length){list.innerHTML='<div class="empty">No body entries yet.</div>';return}
+list.innerHTML=filtered.map(b=>`<article class="item"><div class="itemTop"><div><b>${Number(b.weight).toFixed(1)} lb</b><div class="meta">${formatDate(b.date)} · waist ${b.waist||0} in</div></div><button class="danger" type="button" data-delb="${esc(b.id)}">Delete</button></div>${b.notes?`<p class="muted" style="margin-top:10px">${esc(b.notes)}</p>`:''}</article>`).join('');}
+
+function renderProgress(){const ws=safeJSON(keys.w);const recent=ws.sort((a,b)=>b.date.localeCompare(a.date));const count30=recent.filter(w=>{const d=new Date();d.setDate(d.getDate()-30);return new Date(w.date+'T00:00:00')>=d}).length;
+const m=sumWeek(ws).reduce((s,w)=>s+Number(w.minutes||0),0);
+const cards=[{id:'pDays',label:'Last 30 days',val:count30},{id:'pWeek',label:'Minutes this week',val:m},{id:'pTotal',label:'Total workouts',val:ws.length},{id:'pUnique',label:'Exercises logged',val:new Set(ws.map(w=>w.name)).size}];
+const wrap=document.getElementById('progressSummary');wrap.innerHTML=cards.map(c=>`<div class="stat"><b>${c.val}</b><span>${c.label}</span></div>`).join('');
+const map=new Map();for(const w of ws){const name=w.name||'';const weight=Number(w.weight||0);if(!name)continue;const cur=map.get(name);if(!cur||weight>cur.weight){map.set(name,{weight, date:w.date});}}
+const rows=[...map.entries()].sort((a,b)=>b[1].weight-a[1].weight);document.getElementById('bestLifts').innerHTML=rows.map(([name,v])=>`<tr><td>${esc(name)}</td><td>${v.weight} lb</td><td>${formatDate(v.date)}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">No lifts logged yet.</td></tr>';
+}
+
+function setView(v){document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));document.getElementById('view-'+v).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));if(v==='today')renderToday();if(v==='workouts')renderWorkouts();if(v==='body')renderBody();if(v==='progress')renderProgress();}
+
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>setView(btn.dataset.view)));
+
+document.getElementById('btnLogNow').addEventListener('click',()=>{setView('workouts');document.getElementById('wName').focus()});
+
+// Workouts
+const wForm=document.getElementById('workoutForm');document.getElementById('wDate').value=todayISO();
+wForm.addEventListener('submit',e=>{e.preventDefault();const ws=safeJSON(keys.w);ws.push({id:key(),date:wForm.wDate.value||todayISO(),type:wForm.wType.value,name:wForm.wName.value.trim(),sets:Number(wForm.wSets.value||0),reps:Number(wForm.wReps.value||0),weight:Number(wForm.wWeight.value||0),minutes:Number(wForm.wMinutes.value||0),distance:Number(wForm.wDistance.value||0),notes:wForm.wNotes.value.trim(),createdAt:new Date().toISOString()});save(keys.w,ws);wForm.reset();wForm.wDate.value=todayISO();renderWorkouts();renderToday();});
+
+document.getElementById('wSearch').addEventListener('input',renderWorkouts);
+
+document.getElementById('workoutList').addEventListener('click',e=>{const id=e.target.dataset.del;if(!id)return;if(!confirm('Delete this workout?'))return;save(keys.w,safeJSON(keys.w).filter(w=>w.id!==id));renderWorkouts();renderToday();});
+
+document.getElementById('clearWorkouts').addEventListener('click',()=>{if(!confirm('Clear all workouts?'))return;save(keys.w,[]);renderWorkouts();renderToday();});
+
+document.getElementById('seedWorkouts').addEventListener('click',()=>{const now=new Date();const isoAgo=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};save(keys.w,[
+{id:key(),date:isoAgo(0),type:'Strength',name:'Bench press',sets:3,reps:8,weight:185,minutes:42,distance:0,notes:'Good setup. Last reps spicy.',createdAt:new Date().toISOString()},
+{id:key(),date:isoAgo(1),type:'Walk',name:'Walk',sets:0,reps:0,weight:0,minutes:30,distance:1.5,notes:'Neighborhood loop.',createdAt:new Date().toISOString()},
+{id:key(),date:isoAgo(3),type:'Strength',name:'Squat',sets:3,reps:5,weight:225,minutes:38,distance:0,notes:'Depth felt decent.',createdAt:new Date().toISOString()}
+]);renderWorkouts();renderToday();});
+
+// Body
+const bForm=document.getElementById('bodyForm');document.getElementById('bDate').value=todayISO();
+bForm.addEventListener('submit',e=>{e.preventDefault();const bs=safeJSON(keys.b);bs.push({id:key(),date:bForm.bDate.value||todayISO(),weight:Number(bForm.bWeight.value||0),waist:Number(bForm.bWaist.value||0),notes:bForm.bNotes.value.trim(),createdAt:new Date().toISOString()});save(keys.b,bs);bForm.reset();bForm.bDate.value=todayISO();renderBody();renderToday();});
+
+document.getElementById('bSearch').addEventListener('input',renderBody);
+
+document.getElementById('bodyList').addEventListener('click',e=>{const id=e.target.dataset.delb;if(!id)return;if(!confirm('Delete this body entry?'))return;save(keys.b,safeJSON(keys.b).filter(b=>b.id!==id));renderBody();renderToday();});
+
+document.getElementById('clearBody').addEventListener('click',()=>{if(!confirm('Clear all body entries?'))return;save(keys.b,[]);renderBody();renderToday();});
+
+document.getElementById('seedBody').addEventListener('click',()=>{const now=new Date();const isoAgo=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};save(keys.b,[
+{id:key(),date:isoAgo(0),weight:204.8,waist:36.0,notes:'Baseline.',createdAt:new Date().toISOString()},
+{id:key(),date:isoAgo(7),weight:208.2,waist:36.5,notes:'Vacation damage.',createdAt:new Date().toISOString()}
+]);renderBody();renderToday();});
+
+// Settings export/import
+function exportAll(){const data={workouts:safeJSON(keys.w),body:safeJSON(keys.b),exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`RadDadBETA-${todayISO()}.json`;a.click();URL.revokeObjectURL(url);}
+
+document.getElementById('btnExport').addEventListener('click',exportAll);
+
+document.getElementById('btnImport').addEventListener('click',()=>document.getElementById('importFile').click());
+
+const file=document.getElementById('importFile');file.addEventListener('change',()=>{const f=file.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!confirm('Import will replace current data. Continue?'))return;
+if(Array.isArray(data.workouts))save(keys.w,data.workouts);
+if(Array.isArray(data.body))save(keys.b,data.body);
+renderToday();renderWorkouts();renderBody();renderProgress();alert('Imported.');}
+catch(e){alert('Import failed: invalid JSON.');}};reader.readAsText(f);file.value='';});
+
+// Clear all
+const clearAll=()=>{if(!confirm('Erase EVERYTHING?'))return;save(keys.w,[]);save(keys.b,[]);renderToday();renderWorkouts();renderBody();renderProgress();};
+document.getElementById('btnClearAll').addEventListener('click',clearAll);
+
+renderToday();renderWorkouts();renderBody();renderProgress();
+</script>
+</body>
 </html>
