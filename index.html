@@ -1,1 +1,93 @@
-<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Rad Dad</title><style>body{margin:0;font-family:sans-serif;background:#111;color:#eee}main{max-width:800px;margin:20px auto;padding:0 12px}section{padding:12px;border:1px solid #333;border-radius:12px;background:#181818}h1{margin:0 0 8px;font-size:32px}label{display:block;margin:10px 0;color:#bbb;font-size:12px;font-weight:700;text-transform:uppercase}input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#101010;color:#eee}button{margin-top:10px;padding:10px;border-radius:10px;border:0;background:#f97316;color:#000;font-weight:900;cursor:pointer}#log .item{border:1px solid #333;border-radius:10px;padding:10px;margin:10px 0;background:#101010}.meta{color:#bbb;font-size:12px}</style></head><body><main><section><h1>Rad Dad</h1><p class=meta>No BS workout log. Stored locally.</p><form id=f><label>Date<input id=d type=date required></label><label>Type<select id=t><option>Strength</option><option>Cardio</option><option>Mobility</option><option>Walk</option><option>Other</option></select></label><label>Minutes<input id=m type=number min=1 max=600 required></label><label>Notes<textarea id=n></textarea></label><button type=submit>Save</button></form></section><section style="margin-top:12px"><h2>Stats</h2><p class=meta>Total workouts: <span id=tw>0</span> · Total min: <span id=tm>0</span> · Streak: <span id=st>0</span></p></section><section style="margin-top:12px"><h2>Log</h2><input id=s type=search placeholder="Filter..."><div id=log></div><button id=clr style="background:#e11d48;color:#fee2e2">Clear</button></section></main><script>const K="radDad.v2";const f=document.getElementById("f"),d=document.getElementById("d"),t=document.getElementById("t"),m=document.getElementById("m"),n=document.getElementById("n"),s=document.getElementById("s"),log=document.getElementById("log");d.value=new Date().toISOString().slice(0,10);const load=()=>{try{return JSON.parse(localStorage.getItem(K))||[]}catch{return[]}};const save=x=>localStorage.setItem(K,JSON.stringify(x));const fmt=iso=>new Date(iso+"T00:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});const streak=x=>{const set=new Set(x.map(a=>a.d));let k=0;const cur=new Date();cur.setHours(0,0,0,0);while(set.has(cur.toISOString().slice(0,10))){k++;cur.setDate(cur.getDate()-1)}return k};const render=()=>{const all=load();const q=s.value.trim().toLowerCase();const filtered=all.filter(a=>`${a.t} ${a.m} ${a.n}`.toLowerCase().includes(q)).sort((a,b)=>b.d.localeCompare(a.d));document.getElementById("tw").textContent=all.length;document.getElementById("tm").textContent=all.reduce((p,c)=>p+Number(c.m),0);document.getElementById("st").textContent=streak(all);log.innerHTML=filtered.length?filtered.map(a=>`<div class=item><b>${fmt(a.d)} · ${a.t}</b> · ${a.m} min<div class=meta>${a.n.replace(/[&<>]/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[x]))}</div></div>`).join(""):`<div class=meta>No workouts yet.</div>`;};f.addEventListener("submit",e=>{e.preventDefault();const all=load();all.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),d:d.value,t:t.value,m:Number(m.value),n:n.value.trim()});save(all);f.reset();d.value=new Date().toISOString().slice(0,10);render()});s.addEventListener("input",render);document.getElementById("clr").addEventListener("click",()=>{if(confirm("Clear all workouts?")){save([]);render()}});render();</script></body></html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rad Dad BETA</title>
+  <meta name="description" content="Rad Dad BETA: no-BS workout, body, habit, and progress tracking." />
+  <style>
+    :root {
+      --bg: #09090b;
+      --card: #15151a;
+      --card2: #1f1f27;
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+      --line: #2f2f38;
+      --accent: #f97316;
+      --good: #22c55e;
+      --warn: #facc15;
+      --bad: #ef4444;
+      --blue: #38bdf8;
+      --shadow: 0 22px 70px rgba(0,0,0,.38);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(249,115,22,.18), transparent 34rem),
+        radial-gradient(circle at 85% 20%, rgba(56,189,248,.09), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.10), transparent 32rem),
+        var(--bg);
+      min-height: 100vh;
+    }
+    header, main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; }
+    header { padding: 32px 0 18px; display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    h1 { margin: 0; font-size: clamp(2.3rem, 7vw, 5.3rem); line-height: .88; letter-spacing: -.075em; }
+    .tagline { margin: 12px 0 0; color: var(--muted); max-width: 720px; }
+    .pill { border: 1px solid var(--line); background: rgba(255,255,255,.045); color: var(--muted); border-radius: 999px; padding: 9px 12px; font-weight: 800; font-size: .82rem; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 0 16px; }
+    .tab { border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--muted); border-radius: 999px; padding: 10px 13px; font-weight: 900; cursor: pointer; }
+    .tab.active { background: var(--accent); color: #111; border-color: var(--accent); }
+    .view { display: none; padding: 0 0 38px; }
+    .view.active { display: block; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 930px) { .grid.two { grid-template-columns: 430px 1fr; } .grid.three { grid-template-columns: repeat(3, 1fr); } }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025)); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
+    .inner { padding: 18px; }
+    h2 { margin: 0 0 14px; font-size: 1.12rem; letter-spacing: -.03em; }
+    h3 { margin: 0 0 8px; font-size: 1rem; }
+    p { line-height: 1.45; }
+    .muted { color: var(--muted); }
+    form { display: grid; gap: 12px; }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: .78rem; font-weight: 900; text-transform: uppercase; letter-spacing: .075em; }
+    input, select, textarea, button { font: inherit; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 15px; padding: 12px; background: #0f0f13; color: var(--text); outline: none; }
+    textarea { min-height: 82px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: rgba(249,115,22,.8); box-shadow: 0 0 0 4px rgba(249,115,22,.12); }
+    button { border: 0; border-radius: 15px; padding: 12px 14px; background: var(--accent); color: #111; font-weight: 950; cursor: pointer; }
+    button:hover { transform: translateY(-1px); }
+    .ghost { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+    .danger { background: transparent; border: 1px solid rgba(239,68,68,.42); color: #fecaca; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    @media (min-width: 760px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .stat { background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 20px; padding: 15px; }
+    .stat b { display: block; font-size: 2rem; line-height: 1; letter-spacing: -.055em; }
+    .stat span { color: var(--muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .075em; font-weight: 900; }
+    .toolbar { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+    .list { display: grid; gap: 10px; }
+    .item { background: rgba(0,0,0,.17); border: 1px solid var(--line); border-radius: 18px; padding: 14px; }
+    .itemTop { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .meta { color: var(--muted); font-size: .9rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+    .chip { border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-weight: 800; font-size: .78rem; }
+    .empty { border: 1px dashed var(--line); border-radius: 18px; padding: 24px; text-align: center; color: var(--muted); background: rgba(255,255,255,.025); }
+    .exerciseRows { display: grid; gap: 10px; }
+    .exercise { border: 1px solid var(--line); border-radius: 18px; padding: 12px; background: rgba(0,0,0,.16); display: grid; gap: 10px; }
+    .mini { font-size: .85rem; padding: 8px 10px; border-radius: 12px; }
+    .score { font-size: clamp(2.3rem, 6vw, 4rem); font-weight: 950; letter-spacing: -.08em; margin: 0; }
+    .good { color: var(--good); } .warn { color: var(--warn); } .bad { color: var(--bad); } .blue { color: var(--blue); }
+    .footerActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .progressBar { height: 11px; border-radius: 999px; background: #0d0d10; overflow: hidden; border: 1px solid var(--line); }
+    .progressBar > div { height: 100%; background: var(--accent); width: 0%; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Rad Dad BETA</h1>
+      <p class="tagline">No-BS tracking for workouts, body stats, daily habits, and the slow demolition of dad-sludge.</p>
+    </div>
+</html>
