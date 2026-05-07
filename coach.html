@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>RAD DAD Beta, Coach</title>
+<style>
+:root{
+  --bg:#10131a;
+  --card:#121622;
+  --muted:#7f8597;
+  --white:#f5f5f5;
+  --accent:#f5a623;
+  --ok:#45d37d;
+  --warn:#ff4d6d;
+  --border:#1e2433;
+}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Californian FB',ui-serif,Georgia,'Times New Roman',serif;
+  background:linear-gradient(180deg, var(--bg), #0b0e13);
+  color:var(--white);
+}
+.wrap{max-width:420px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 10px;letter-spacing:.5px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  box-shadow:0 14px 40px rgba(0,0,0,.42);
+  margin-bottom:12px;
+}
+.controls label{display:block;font-size:12px;margin:0 0 6px;color:var(--muted)}
+.controls select,.controls input[type=date],.controls input[type=number]{
+  width:100%;border-radius:10px;border:1px solid var(--border);
+  background:#0b0f18;color:var(--white);
+  padding:10px 10px;font-size:14px;outline:none;
+}
+.controls .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.controls .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.current h2{margin:0 0 8px;font-size:16px}
+.badge{font-size:12px;border-radius:999px;padding:2px 8px;border:1px solid var(--border);color:var(--muted)}
+.stage{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:4px}
+.stage b{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+th,td{padding:8px 6px;border-bottom:1px solid #161d2e;font-size:12px;text-align:center}
+th{text-align:center;font-size:12px;color:var(--muted)}
+td input{width:100%;border-radius:10px;border:1px solid var(--border);background:#0b0f18;color:var(--white);padding:8px;font-size:12px;outline:none}
+td select{width:100%;border-radius:10px;border:1px solid var(--border);background:#0b0f18;color:var(--white);padding:8px;font-size:12px;outline:none}
+td .noteSel{width:100%}
+.btnRow{display:flex;gap:10px;margin-top:10px}
+button{
+  flex:1;border:0;border-radius:12px;padding:10px;font-size:14px;
+  font-family:inherit;font-weight:600;color:#0b0f18;
+  background:var(--accent);cursor:pointer;
+}
+button.secondary{background:transparent;color:var(--white);border:1px solid var(--border)}
+button.danger{background:var(--warn);color:#0b0f18}
+.rec{margin-top:10px;font-size:13px;line-height:1.4}
+.rec b{color:var(--accent)}
+small{color:var(--muted);display:block;margin-top:10px}
+@media (max-width:380px){
+  .controls .grid,.controls .grid3{grid-template-columns:1fr}
+  th,td{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class='wrap'>
+  <h1>RAD DAD Coach</h1>
+
+  <div class='card controls'>
+    <div class='grid3'>
+      <div>
+        <label>Date</label>
+        <input id='date' type='date' min='2026-05-01'>
+      </div>
+      <div>
+        <label>Day</label>
+        <select id='day'></select>
+      </div>
+      <div>
+        <label>Type</label>
+        <select id='type'></select>
+      </div>
+    </div>
+    <div class='grid'>
+      <div>
+        <label>Plan</label>
+        <select id='plan'></select>
+      </div>
+      <div>
+        <label>Exercise</label>
+        <select id='ex'></select>
+      </div>
+    </div>
+  </div>
+
+  <div class='card current'>
+    <div class='stage'>
+      <div>
+        <h2 id='exTitle'></h2>
+        <b id='stageTxt'></b>
+      </div>
+      <span class='badge' id='badge'></span>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Set</th><th>Weight</th><th>Reps</th><th>RPE</th><th>Note</th></tr>
+      </thead>
+      <tbody id='tbody'></tbody>
+    </table>
+
+    <div class='btnRow'>
+      <button id='next'>What next</button>
+      <button class='secondary' id='move'>Next exercise</button>
+    </div>
+    <div class='btnRow'>
+      <button class='danger' id='reset'>Clear day</button>
+    </div>
+
+    <div class='rec' id='rec'></div>
+    <small>Note options matter: none, traps, forearms, grip</small>
+  </div>
+</div>
+
+<script>
+const LS='rad_dad_coach_v1';
+const dayList=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const dayType={
+  Mon:'Push', Tue:'Pull', Wed:'Legs',
+  Thu:'Push', Fri:'Pull', Sat:'Light', Sun:'Recovery'
+};
+const plans={
+  Push:{
+    A:['Bench Press','Incline DB Press','DB Shoulder Press','Cable Triceps Pushdown','Lateral Raises'],
+    B:['DB Bench','Pulley Chest Press','Arnold Press','Close Grip Pushup','Lateral Raises']
+  },
+  Pull:{
+    A:['Lat Pulldown','Seated Cable Row','DB Row','Face Pull','DB Curl','Hammer Curl'],
+    B:['Wide Pulldown','1-Arm Cable Row','Machine Row','Rear Delt Fly','EZ Bar Curl','Incline Curl']
+  },
+  Legs:{
+    A:['Goblet Squat','DB RDL','Walking Lunge','Calf Raise','Plank'],
+    B:['DB Front Squat','Leg Press','Bulgarian Split Squat','Calf Raise','Ab Wheel']
+  },
+  Light:{
+    A:['Incline Walk','Bodyweight Squat','Band Pull Apart','Pushup','Core'],
+    B:['Incline Walk','DB Complex','Plank Series','Mobility','Stretch']
+  },
+  Recovery:{
+    A:['Walk','Stretch','Walk'],
+    B:['Bike','Stretch','Walk']
+  }
+};
+const allExercises=[...new Set(Object.values(plans).flatMap(x=>Object.values(x).flat()))];
+
+function load(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch{return{}}}
+function save(s){localStorage.setItem(LS,JSON.stringify(s))}
+function pad(n){return String(n).padStart(2,'0')}
+function todayISO(){
+  const d=new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`
+}
+function dayFromISO(iso){
+  const d=new Date(iso+'T00:00:00');
+  const idx=d.getDay(); // Sun=0
+  const map=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return map[idx];
+}
+function opposite(p){return p==='A'?'B':'A'}
+function safe(val,alt){return val!==undefined?val:alt}
+
+function setBadge(txt){
+  document.getElementById('badge').textContent=txt
+}
+
+function noteAdvice(note){
+  if(note==='traps') return 'Traps are trying to steal it. Lower weight a little, shoulders down, elbow path low.';
+  if(note==='forearms') return 'Forearms say the weight/grip is too heavy or too much fatigue. Lower weight or use straps if allowed, or change grip.';
+  if(note==='grip') return 'Grip limitation. Lower weight, shorten set, or use straps if allowed.';
+  return ''
+}
+
+function recFromSet(rpe,note,setsDone){
+  const noteMsg=noteAdvice(note);
+  const msgParts=[];
+  if(noteMsg) msgParts.push(noteMsg);
+
+  if(rpe<=7){
+    msgParts.push('Next: Increase slightly for the next set.');
+  }else if(rpe===8){
+    msgParts.push('Next: Hold weight, keep form tight.');
+  }else if(rpe===9){
+    msgParts.push('Next: Stay at weight or reduce slightly. Form first.');
+  }else if(rpe>=10){
+    msgParts.push('Next: This is your last set. Stop the exercise or drop weight significantly.');
+  }
+
+  if(setsDone>=4){
+    msgParts.push('Next: You completed 4 sets. Move on.');
+  }
+  return msgParts.join(' ')
+}
+
+function render(){
+  const s=load();
+  if(!s.date) s.date=todayISO();
+  document.getElementById('date').value=s.date;
+
+  const daySel=document.getElementById('day');
+  daySel.innerHTML=dayList.map(d=>`<option value='${d}'>${d}</option>`).join('');
+  if(!s.day) s.day=dayFromISO(s.date);
+  daySel.value=s.day;
+
+  const typeSel=document.getElementById('type');
+  const types=Object.keys(plans);
+  typeSel.innerHTML=types.map(t=>`<option value='${t}'>${t}</option>`).join('');
+  if(!s.type) s.type=safe(dayType[s.day],'Push');
+  typeSel.value=s.type;
+
+  const planSel=document.getElementById('plan');
+  const lastPlan=s.lastPlan||{};
+  if(!s.plan){
+    const defaultPlan=safe(lastPlan[s.type], 'A');
+    s.plan=opposite(defaultPlan);
+  }
+  planSel.innerHTML=`<option value='A'>Plan A</option><option value='B'>Plan B</option>`;
+  planSel.value=s.plan;
+
+  const exList=plans[s.type][s.plan]||[];
+  const exSel=document.getElementById('ex');
+  exSel.innerHTML=exList.map((ex,i)=>`<option value='${i}'>${ex}</option>`).join('');
+  if(s.exIndex===undefined) s.exIndex=0;
+  if(s.exIndex>=exList.length) s.exIndex=exList.length-1;
+  exSel.value=String(s.exIndex);
+
+  save(s);
+  renderExerciseCard();
+}
+
+function statePath(s){
+  const date=s.date;
+  if(!date) return;
+  if(!s.logs) s.logs={};
+  if(!s.logs[date]) s.logs[date]={};
+  if(!s.logs[date][s.type]) s.logs[date][s.type]={};
+  if(!s.logs[date][s.type][s.plan]) s.logs[date][s.type][s.plan]={exIndex:s.exIndex, sets:{}};
+  const entry=s.logs[date][s.type][s.plan];
+  entry.exIndex=s.exIndex;
+  return entry;
+}
+
+function renderExerciseCard(){
+  const s=load();
+  const exList=plans[s.type][s.plan]||[];
+  const ex=exList[s.exIndex]||'Exercise';
+  document.getElementById('exTitle').textContent=ex;
+  document.getElementById('stageTxt').textContent=`Plan ${s.plan} • ${s.type}`;
+
+  setBadge(`${s.day}`);
+
+  const entry=statePath(s);
+  const tbody=document.getElementById('tbody');
+  let html='';
+  for(let set=1; set<=4; set++){
+    const key=String(set);
+    const row=entry.sets[key]||{};
+    const rpeVal=row.rpe??7;
+    html+=`
+      <tr>
+        <td>${set}</td>
+        <td><input type='number' inputmode='decimal' min='0' placeholder='0' value='${row.w||''}' data-k='w' data-set='${set}'></td>
+        <td><input type='number' inputmode='numeric' min='0' placeholder='0' value='${row.r||''}' data-k='r' data-set='${set}'></td>
+        <td>
+          <select data-k='rpe' data-set='${set}'>
+            ${[6,7,8,9,10].map(v=>`<option value='${v}' ${v===rpeVal?'selected':''}>${v}</option>`).join('')}
+          </select>
+        </td>
+        <td>
+          <select class='noteSel' data-k='note' data-set='${set}'>
+            ${['none','traps','forearms','grip'].map(n=>`<option value='${n}' ${(row.note||'none')===n?'selected':''}>${n}</option>`).join('')}
+          </select>
+        </td>
+      </tr>
+    `;
+  }
+  tbody.innerHTML=html;
+  document.getElementById('rec').textContent='';
+  save(s);
+
+  tbody.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('change',()=>{
+      const st=load();
+      const entry=statePath(st);
+      const set=String(el.dataset.set);
+      const k=el.dataset.k;
+      if(!entry.sets[set]) entry.sets[set]={};
+      let v=el.value;
+      if(k==='w'){v=v?parseFloat(v):''}
+      if(k==='r'){v=v?parseInt(v):''}
+      if(k==='rpe'){v=parseInt(v)}
+      if(k==='note' && v==='none'){v=''}
+      entry.sets[set][k]=v;
+      save(st);
+    })
+  })
+}
+
+document.getElementById('date').addEventListener('change',e=>{
+  const s=load();
+  s.date=e.target.value;
+  s.day=dayFromISO(s.date);
+  s.type=dayType[s.day]||s.type||'Push';
+  s.plan='';
+  s.exIndex=0;
+  save(s);
+  render();
+});
+
+document.getElementById('day').addEventListener('change',e=>{
+  const s=load();
+  s.day=e.target.value;
+  s.type=dayType[s.day]||s.type||'Push';
+  s.plan='';
+  s.exIndex=0;
+  save(s);
+  render();
+});
+
+document.getElementById('type').addEventListener('change',e=>{
+  const s=load();
+  s.type=e.target.value;
+  s.plan='';
+  s.exIndex=0;
+  save(s);
+  render();
+});
+
+document.getElementById('plan').addEventListener('change',e=>{
+  const s=load();
+  const newPlan=e.target.value;
+  if(!s.lastPlan) s.lastPlan={};
+  s.lastPlan[s.type]=newPlan;
+  s.plan=newPlan;
+  s.exIndex=0;
+  save(s);
+  render();
+});
+
+document.getElementById('ex').addEventListener('change',e=>{
+  const s=load();
+  s.exIndex=parseInt(e.target.value);
+  save(s);
+  renderExerciseCard();
+});
+
+document.getElementById('next').addEventListener('click',()=>{
+  const s=load();
+  const entry=statePath(s);
+  if(!entry){return}
+  let setsDone=0;
+  let lastSet;
+  for(let i=4;i>=1;i--){
+    const row=entry.sets[String(i)];
+    if(row && row.r && row.w){
+      setsDone=i;
+      lastSet=row;
+      break;
+    }
+  }
+  const rpe=lastSet?.rpe||7;
+  const note=(lastSet?.note||'none');
+  const recText=recFromSet(rpe,note,setsDone);
+  document.getElementById('rec').innerHTML=`<b>Coach:</b> ${recText}`;
+  save(s);
+});
+
+document.getElementById('move').addEventListener('click',()=>{
+  const s=load();
+  const exList=plans[s.type][s.plan]||[];
+  if(exList.length===0){return}
+  s.exIndex=(s.exIndex+1)%exList.length;
+  document.getElementById('rec').textContent='';
+  save(s);
+  renderExerciseCard();
+});
+
+document.getElementById('reset').addEventListener('click',()=>{
+  const s=load();
+  if(s.logs && s.logs[s.date] && s.logs[s.date][s.type]){
+    delete s.logs[s.date][s.type];
+    if(Object.keys(s.logs[s.date]).length===0){
+      delete s.logs[s.date];
+    }
+  }
+  s.plan='';
+  s.exIndex=0;
+  document.getElementById('rec').textContent='';
+  save(s);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
